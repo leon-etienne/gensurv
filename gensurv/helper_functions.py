@@ -4,3 +4,6 @@ def thisisatest():
     
 def secondtest():
     print("wow")
+    
+def thirdtest():
+    print("wow3")

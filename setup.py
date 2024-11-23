@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='gensurv',
-    version='0.1',
+    version='0.1.1',
     description='A simple Python module to share functions',
     author='Leetkue',
     author_email='your.email@example.com',
