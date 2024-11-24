@@ -1,17 +1,15 @@
-import numpy as np
-from tqdm import tqdm
-from datetime import datetime
-from IPython.display import Video
 import cv2
+import numpy as np
 import PIL
 import skimage
-from ultralytics import YOLO
-from IPython.display import Video
 import torch
+from datetime import datetime
+from IPython.display import Video
+from tqdm import tqdm
+from ultralytics import YOLO
 
-import cv2
 
-def get_video_frames(input_video_filename, start=0, end=None, width=None, height=None):
+def get_video_frames(input_video_filename, start=0, end=None, width=None, height=None, display=True):
     """
     Loads a video, extracts frames within the specified time interval, and returns them as a list.
     
@@ -63,14 +61,14 @@ def get_video_frames(input_video_filename, start=0, end=None, width=None, height
     print(f"Number of frames: {len(video_frames)}")
     print(f"Frames per second (fps): {fps}")
     print(f"Duration: {duration:.2f} seconds")
-    display(Video(input_video_filename, width=width or 640, height=height or 360))
+    
+    if display:
+        display(Video(input_video_filename, width=width or 640, height=height or 360))
     
     return video_frames, fps, duration
 
-import cv2
-from datetime import datetime
 
-def save_video_frames(processed_frames, output_filename, fps):
+def save_video_frames(processed_frames, output_filename, fps, duration, display=False):
     """
     Save the processed frames as a new video file using OpenCV.
     
@@ -105,5 +103,6 @@ def save_video_frames(processed_frames, output_filename, fps):
     # Display video information
     print(f"Video saved to: {full_output_filename}")
     
-    # Display the processed video with specified dimensions
-    display(Video(url=full_output_filename, width=640, height=360))
+    if display:
+        # Display the processed video with specified dimensions
+        display(Video(url=full_output_filename, width=640, height=360))
