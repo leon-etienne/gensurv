@@ -49,17 +49,6 @@ def play_video(change, video):
         if video_path:
             video.value = open(video_path, "rb").read()
 
-# Function for periodic updates in a separate thread
-def start_periodic_update(directory, dropdown, video, interval=1.0):
-    def update_loop():
-        while True:
-            update_dropdown_options(directory, dropdown, video)
-            time.sleep(interval)
-    
-    # Start the update loop in a separate thread
-    thread = threading.Thread(target=update_loop, daemon=True)
-    thread.start()
-
 # Main widget creation function
 def create_video_browser(directory):
     # Create the video widget
@@ -85,8 +74,5 @@ def create_video_browser(directory):
     # Initial load of video files and auto-play the first video if exists
     update_dropdown_options(directory, dropdown, video)
     
-    # Start periodic update in a separate thread (refresh every 1 second)
-    start_periodic_update(directory, dropdown, video, interval=1.0)
-
     # Display the interface
     display(widgets.VBox([dropdown, video]))
