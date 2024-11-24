@@ -68,7 +68,7 @@ def get_video_frames(input_video_filename, start=0, end=None, width=None, height
     return video_frames, fps, duration
 
 
-def save_video_frames(processed_frames, output_filename, fps, duration, displayVideo=True):
+def save_video_frames(processed_frames, output_filename, fps, duration=0, displayVideo=True):
     """
     Save the processed frames as a new video file using OpenCV.
     
