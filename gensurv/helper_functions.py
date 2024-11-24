@@ -1,4 +1,5 @@
 import cv2
+import ffmpegcv
 import numpy as np
 import PIL
 import skimage
@@ -7,7 +8,6 @@ from datetime import datetime
 from IPython.display import Video
 from tqdm import tqdm
 from ultralytics import YOLO
-
 
 def get_video_frames(input_video_filename, start=0, end=None, width=None, height=None, displayVideo=True):
     """
@@ -26,7 +26,7 @@ def get_video_frames(input_video_filename, start=0, end=None, width=None, height
     """
     
     # Open the video file
-    cap = cv2.VideoCapture(input_video_filename)
+    cap = ffmpegcv.VideoCapture(input_video_filename)
     
     # Get video properties
     fps = cap.get(cv2.CAP_PROP_FPS)
@@ -86,8 +86,7 @@ def save_video_frames(processed_frames, output_filename, fps, duration=0, displa
     full_output_filename = f"{timestamp}_{output_filename}"
     
     # Define the codec and create a VideoWriter object
-    fourcc = cv2.VideoWriter_fourcc(*'vp80')  # Using mp4v codec for .mp4 output
-    out = cv2.VideoWriter(full_output_filename, fourcc, fps, (width, height))
+    out = ffmpegcv.VideoWriterNV(full_output_filename, "h264", fps, resize=(width, height))
     
     # Write each frame to the video file
     for frame in processed_frames:
