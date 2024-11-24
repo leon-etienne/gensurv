@@ -9,7 +9,7 @@ from tqdm import tqdm
 from ultralytics import YOLO
 
 
-def get_video_frames(input_video_filename, start=0, end=None, width=None, height=None, display=True):
+def get_video_frames(input_video_filename, start=0, end=None, width=None, height=None, displayVideo=True):
     """
     Loads a video, extracts frames within the specified time interval, and returns them as a list.
     
@@ -62,13 +62,13 @@ def get_video_frames(input_video_filename, start=0, end=None, width=None, height
     print(f"Frames per second (fps): {fps}")
     print(f"Duration: {duration:.2f} seconds")
     
-    if display:
+    if displayVideo:
         display(Video(input_video_filename, width=width or 640, height=height or 360))
     
     return video_frames, fps, duration
 
 
-def save_video_frames(processed_frames, output_filename, fps, duration, display=False):
+def save_video_frames(processed_frames, output_filename, fps, duration, displayVideo=True):
     """
     Save the processed frames as a new video file using OpenCV.
     
@@ -103,6 +103,6 @@ def save_video_frames(processed_frames, output_filename, fps, duration, display=
     # Display video information
     print(f"Video saved to: {full_output_filename}")
     
-    if display:
+    if displayVideo:
         # Display the processed video with specified dimensions
         display(Video(url=full_output_filename, width=640, height=360))
