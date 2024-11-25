@@ -36,13 +36,12 @@ def process_results_to_masks(results, frame, classes=[], ids=[], color=(255, 255
     classes = [classes] if isinstance(classes, (int, float)) else classes
     ids = [ids] if isinstance(ids, (int, float)) else ids
     masks = np.zeros_like(frame)
-    for mask, box in zip(results[0].masks.xy, results[0].boxes):
+    for index, mask, box in enumerate(zip(results[0].masks.xy, results[0].boxes)):
         class_id = int(box.cls[0])
         if not classes or class_id in classes:
             points = np.int32([mask])
             cv2.drawContours(masks, points, contourIdx=-1, color=color, thickness=thickness)
-        id = int(box.id[0])
-        if not ids or id in ids:
+        if not ids or index in ids:
             points = np.int32([mask])
             cv2.drawContours(masks, points, contourIdx=-1, color=color, thickness=thickness)
     return masks
