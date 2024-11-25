@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 from IPython.display import Video
 from tqdm import tqdm
@@ -31,64 +32,135 @@ import torch
 
 def process_results_to_masks(results, frame, classes=[], ids=[], color=(255, 255, 255), thickness=-1):
     """
-    Generates a binary mask with objects as white (255) and the background as black (0).
+    Generates a binary mask with specified objects as white (255) and the background as black (0).
+    
+    Parameters:
+        results (list): Detection results containing masks and bounding boxes.
+        frame (np.array): The frame/image where the mask is generated.
+        classes (list or int, optional): List of class IDs to include in the mask. Can be a single integer.
+        ids (list or int, optional): List of instance IDs to include in the mask. Can be a single integer.
+        color (tuple, optional): Color for the mask, default is white (255, 255, 255).
+        thickness (int, optional): Thickness for the mask contours. Default is -1 (filled).
+    
+    Returns:
+        np.array: Binary mask image with objects as specified.
     """
-    classes = [classes] if isinstance(classes, (int, float)) else classes
-    ids = [ids] if isinstance(ids, (int, float)) else ids
+    # Ensure `classes` and `ids` are lists
+    if isinstance(classes, (int, float)):
+        classes = [classes]
+    if isinstance(ids, (int, float)):
+        ids = [ids]
+
+    # Initialize an empty mask with the same dimensions as the frame
     masks = np.zeros_like(frame)
 
+    # Iterate through detected masks and bounding boxes
     for mask, box in zip(results[0].masks.xy, results[0].boxes):
         class_id = int(box.cls[0])
-        id = int(box.id[0])
-        if (ids and id in ids) or (not classes or class_id in classes):
+        instance_id = int(box.id[0])
+
+        # Check if the current detection matches the desired classes or ids
+        include_mask = (
+            (instance_id in ids) or
+            (class_id in classes) or
+            (not classes and not ids)
+        )
+
+        if include_mask:
+            # Draw the mask contour on the binary mask
             points = np.int32([mask])
             cv2.drawContours(masks, points, contourIdx=-1, color=color, thickness=thickness)
-        
+
     return masks
 
 
-def process_results_to_boxes(results, frame, classes=[], color=(255, 255, 255), thickness=-1):
+def process_results_to_boxes(results, frame, classes=[], ids=[], color=(255, 255, 255), thickness=-1):
     """
     Generates a mask with bounding boxes drawn in white (255) on a black (0) background.
+    
+    Parameters:
+        results (list): Detection results containing bounding boxes.
+        frame (np.array): The frame/image where the mask is generated.
+        classes (list or int, optional): List of class IDs to include in the mask. Can be a single integer.
+        ids (list or int, optional): List of instance IDs to include in the mask. Can be a single integer.
+        color (tuple, optional): Color for the bounding boxes, default is white (255, 255, 255).
+        thickness (int, optional): Thickness for the bounding box borders. Default is -1 (filled).
+    
+    Returns:
+        np.array: Mask with bounding boxes drawn.
     """
-    classes = [classes] if isinstance(classes, (int, float)) else classes
+    # Ensure `classes` and `ids` are lists
+    if isinstance(classes, (int, float)):
+        classes = [classes]
+    if isinstance(ids, (int, float)):
+        ids = [ids]
+
+    # Initialize an empty mask with the same dimensions as the frame
     masks = np.zeros_like(frame)
+
+    # Iterate through detected bounding boxes
     for box in results[0].boxes:
         class_id = int(box.cls[0])
-        if not classes or class_id in classes:
+        instance_id = int(box.id[0])
+
+        # Check if the current detection matches the desired classes or ids
+        include_box = (
+            (instance_id in ids) or
+            (class_id in classes) or
+            (not classes and not ids)
+        )
+
+        if include_box:
+            # Extract bounding box coordinates and draw the rectangle
             x0, y0, x1, y1 = box.xyxy[0].int().tolist()
             masks = cv2.rectangle(masks, (x0, y0), (x1, y1), color, thickness)
+
     return masks
 
 
-def process_results_to_masks_normalized(results, frame, classes=[], color=(255, 255, 255), thickness=-1):
+
+def process_results_to_masks_normalized(results, frame, classes=[], ids=[], color=(255, 255, 255), thickness=-1):
     """
     Generates a normalized mask with objects as 1 and the background as 0.
     """
-    masks = process_results_to_masks(results, frame, classes=classes, color=color, thickness=thickness)
+    masks = process_results_to_masks(results, frame, classes=classes, ids=ids, color=color, thickness=thickness)
     masks = masks / 255.0
     return masks
 
 
-def process_results_to_boxes_normalized(results, frame, classes=[], color=(255, 255, 255), thickness=-1):
+def process_results_to_boxes_normalized(results, frame, classes=[], ids=[], color=(255, 255, 255), thickness=-1):
     """
-    Generates a normalized mask with bounding boxes as 1 and the background as 0.
+    Generates a normalized mask with objects as 1 and the background as 0.
     """
-    masks = process_results_to_boxes(results, frame, classes=classes, color=color, thickness=thickness)
+    masks = process_results_to_boxes(results, frame, classes=classes, ids=ids, color=color, thickness=thickness)
     masks = masks / 255.0
     return masks
 
 
-def process_results_to_center_points(results, classes=[]):
+def process_results_to_center_points(results, classes=[], ids=[]):
     """
     Extracts the center points of bounding boxes as an array of coordinates.
     """
-    classes = [classes] if isinstance(classes, (int, float)) else classes
+    # Ensure `classes` and `ids` are lists
+    if isinstance(classes, (int, float)):
+        classes = [classes]
+    if isinstance(ids, (int, float)):
+        ids = [ids]    
+        
     points = np.empty((0, 2), dtype=np.int32)
     
     for box in results[0].boxes:
         class_id = int(box.cls[0])
-        if not classes or class_id in classes:
+        instance_id = int(box.id[0])
+
+        # Check if the current detection matches the desired classes or ids
+        include_center = (
+            (instance_id in ids) or
+            (class_id in classes) or
+            (not classes and not ids)
+        )
+        
+        if include_center:
             x0, y0, x1, y1 = box.xyxy[0].int().tolist()
             center_x = (x0 + x1) / 2
             center_y = (y0 + y1) / 2
@@ -97,16 +169,30 @@ def process_results_to_center_points(results, classes=[]):
     return points
 
 
-def process_results_to_boxes_points(results, classes=[]):
+def process_results_to_boxes_points(results, classes=[], ids=[]):
     """
     Extracts the corner points of bounding boxes as an array of coordinates.
     """
-    classes = [classes] if isinstance(classes, (int, float)) else classes
+    # Ensure `classes` and `ids` are lists
+    if isinstance(classes, (int, float)):
+        classes = [classes]
+    if isinstance(ids, (int, float)):
+        ids = [ids]
+
     points = np.empty((0, 2), dtype=np.int32)
     
     for box in results[0].boxes:
         class_id = int(box.cls[0])
-        if not classes or class_id in classes:
+        instance_id = int(box.id[0])
+
+        # Check if the current detection matches the desired classes or ids
+        include_boxes = (
+            (instance_id in ids) or
+            (class_id in classes) or
+            (not classes and not ids)
+        )
+        
+        if include_boxes:
             x0, y0, x1, y1 = box.xyxy[0].int().tolist()
             points = np.append(points, [np.array([x0, y0], np.int32)], axis=0)
             points = np.append(points, [np.array([x0, y1], np.int32)], axis=0)
@@ -116,16 +202,30 @@ def process_results_to_boxes_points(results, classes=[]):
     return points
 
 
-def process_results_to_masks_points(results, classes=[]):
+def process_results_to_masks_points(results, classes=[], ids=[]):
     """
     Extracts points from masks as an array of coordinates.
     """
-    classes = [classes] if isinstance(classes, (int, float)) else classes
+    # Ensure `classes` and `ids` are lists
+    if isinstance(classes, (int, float)):
+        classes = [classes]
+    if isinstance(ids, (int, float)):
+        ids = [ids]
+
     points = np.empty((0, 2), dtype=np.int32)
     
     for mask, box in zip(results[0].masks.xy, results[0].boxes):
         class_id = int(box.cls[0])
-        if not classes or class_id in classes:
+        instance_id = int(box.id[0])
+
+        # Check if the current detection matches the desired classes or ids
+        include_mask = (
+            (instance_id in ids) or
+            (class_id in classes) or
+            (not classes and not ids)
+        )
+        
+        if include_mask:
             points = np.concatenate((points, mask.astype(np.int32)), axis=0)
 
     return points
@@ -139,6 +239,38 @@ def process_results_to_labels(results, model):
     for box in results[0].boxes:
         class_id = int(box.cls[0])
         labels.append(model.names[class_id])
+    return labels
+
+
+def process_results_to_classes_labels(results, model):
+    """
+    Extracts class labels for bounding boxes based on the model's class names.
+    """
+    labels = []
+    for box in results[0].boxes:
+        class_id = int(box.cls[0])
+        labels.append(model.names[class_id])
+    return labels
+
+
+def process_results_to_ids_labels(results, model):
+    """
+    Extracts class labels for bounding boxes based on the model's class names.
+    """
+    labels = []
+    for box in results[0].boxes:
+        id = int(box.id[0])
+        labels.append(str(id))
+    return labels
+
+
+def process_results_to_confidences_labels(results, model):
+    """
+    Extracts class labels for bounding boxes based on the model's class names.
+    """
+    labels = []
+    for box in results[0].boxes:
+        labels.append(float(box.conf[0]))
     return labels
 
 
@@ -202,3 +334,50 @@ def combine_images_with_mask(a, b):
     result[non_black_mask] = b[non_black_mask]
 
     return result
+
+
+def process_image_to_contours(frame, threshold=127, max_value=255, color=(255, 255, 255), thickness=2):
+    # Convert the frame to grayscale
+    gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+    
+    # Apply a binary threshold to get a binary image
+    _, thresh = cv2.threshold(gray, threshold, max_value, cv2.THRESH_BINARY)
+
+    # Find contours
+    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Create a black image with the same resolution as the input frame
+    contour_frame = np.zeros_like(frame)
+
+    # Draw the contours in white (for RGB image, use (255, 255, 255) for white)
+    cv2.drawContours(contour_frame, contours, -1, color, thickness)
+
+    return contour_frame
+
+
+def start_results_to_tracks():
+    # Store the track history
+    track_history = defaultdict(lambda: [])
+
+    def process_results_to_tacks(results, frame, max_tracks=30, color=(230, 230, 230), thickness=5):
+        annotated_frame = np.zeros_like(frame)
+
+        # Get the boxes and track IDs
+        boxes = results[0].boxes.xywh.cpu()
+        track_ids = results[0].boxes.id.int().cpu().tolist()
+
+        # Plot the tracks
+        for box, track_id in zip(boxes, track_ids):
+            x, y, w, h = box
+            track = track_history[track_id]
+            track.append((float(x), float(y)))  # x, y center point
+
+            # Only draw the last `max_tracks` points
+            draw_points = track[-max_tracks:]
+            if len(draw_points) > 1:
+                points = np.hstack(draw_points).astype(np.int32).reshape((-1, 1, 2))
+                cv2.polylines(annotated_frame, [points], isClosed=False, color=color, thickness=thickness)
+
+        return cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
+
+    return process_results_to_tacks

@@ -8,5 +8,13 @@ setup(
     author_email='your.email@example.com',
     url='https://github.com/leon-etienne/gensurv',  # GitHub URL
     packages=find_packages(),
-    install_requires=[],  # Add any dependencies here
+    install_requires=[
+        scikit-image,
+        ffmpegcv,
+        opencv-python,
+        transformers,
+        diffusers,
+        pillow,
+        ultralytics
+    ],  # Add any dependencies here
 )
