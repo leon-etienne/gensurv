@@ -40,9 +40,11 @@ def process_results_to_masks(results, frame, classes=[], ids=[], color=(255, 255
     for index, (mask, box) in enumerate(zip(results[0].masks.xy, results[0].boxes)):
         class_id = int(box.cls[0])
         if index in ids:
+            print(index)
             points = np.int32([mask])
             cv2.drawContours(masks, points, contourIdx=-1, color=color, thickness=thickness)
         elif not classes or class_id in classes:
+            print(f"classes")
             points = np.int32([mask])
             cv2.drawContours(masks, points, contourIdx=-1, color=color, thickness=thickness)
         
