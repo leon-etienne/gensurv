@@ -29,15 +29,20 @@ import torch
 # Inpainting
 # Marigold Depth and normals
 
-def process_results_to_masks(results, frame, classes=[], color=(255, 255, 255), thickness=-1):
+def process_results_to_masks(results, frame, classes=[], ids=[], color=(255, 255, 255), thickness=-1):
     """
     Generates a binary mask with objects as white (255) and the background as black (0).
     """
     classes = [classes] if isinstance(classes, (int, float)) else classes
+    ids = [ids] if isinstance(ids, (int, float)) else ids
     masks = np.zeros_like(frame)
     for mask, box in zip(results[0].masks.xy, results[0].boxes):
         class_id = int(box.cls[0])
         if not classes or class_id in classes:
+            points = np.int32([mask])
+            cv2.drawContours(masks, points, contourIdx=-1, color=color, thickness=thickness)
+        id = int(box.id[0])
+        if not ids or id in ids:
             points = np.int32([mask])
             cv2.drawContours(masks, points, contourIdx=-1, color=color, thickness=thickness)
     return masks
