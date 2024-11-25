@@ -29,25 +29,45 @@ import torch
 # Inpainting
 # Marigold Depth and normals
 
+import numpy as np
+import cv2
+
 def process_results_to_masks(results, frame, classes=[], ids=[], color=(255, 255, 255), thickness=-1):
     """
     Generates a binary mask with objects as white (255) and the background as black (0).
+    
+    Args:
+        results: Results containing detected objects' masks and bounding boxes.
+        frame: The frame to create a mask for.
+        classes: List of class IDs to filter (e.g., [0, 1, 2]).
+        ids: List of object IDs (indices) to filter.
+        color: Color to draw the mask contours (default is white).
+        thickness: Thickness of contours. Use -1 to fill.
+    
+    Returns:
+        A binary mask image where the objects are white and the background is black.
     """
+    # Ensure classes and ids are lists if they are not already
     classes = [classes] if isinstance(classes, (int, float)) else classes
     ids = [ids] if isinstance(ids, (int, float)) else ids
+
+    # Initialize the mask as a black image of the same size as the frame
     masks = np.zeros_like(frame)
 
+    # Iterate over detected results
     for index, (mask, box) in enumerate(zip(results[0].masks.xy, results[0].boxes)):
         class_id = int(box.cls[0])
-        if index in ids:
-            print(index)
-            points = np.int32([mask])
-            cv2.drawContours(masks, points, contourIdx=-1, color=color, thickness=thickness)
+
+        # Prioritize drawing by IDs if specified
+        if ids:
+            if index in ids:
+                points = np.int32([mask])
+                cv2.drawContours(masks, points, contourIdx=-1, color=color, thickness=thickness)
+        # If no IDs are specified, draw by class filter
         elif not classes or class_id in classes:
-            print(f"classes")
             points = np.int32([mask])
             cv2.drawContours(masks, points, contourIdx=-1, color=color, thickness=thickness)
-        
+    
     return masks
 
 
