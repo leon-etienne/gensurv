@@ -9,12 +9,12 @@ setup(
     url='https://github.com/leon-etienne/gensurv',  # GitHub URL
     packages=find_packages(),
     install_requires=[
-        'scikit-image',
-        'ffmpegcv',
-        'opencv-python',
-        'transformers',
-        'diffusers',
-        'pillow',
-        'ultralytics'
+        # 'scikit-image',
+        # 'ffmpegcv',
+        # 'opencv-python',
+        # 'transformers',
+        # 'diffusers',
+        # 'pillow',
+        # 'ultralytics'
     ],  # Add any dependencies here
 )
