@@ -109,6 +109,12 @@ def process_results_to_boxes(results, frame, classes=[], ids=[], color=(255, 255
             (class_id in classes) or
             (not classes and not ids)
         )
+        
+        print("instance_id in ids", instance_id in ids)
+        print("class_id in classes", class_id in classes)
+        print("not classes and not ids", not classes and not ids)
+        print("not classes", not classes)
+        print("not ids", not ids)
 
         if include_box:
             # Extract bounding box coordinates and draw the rectangle

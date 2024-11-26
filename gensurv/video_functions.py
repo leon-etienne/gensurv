@@ -71,7 +71,6 @@ def get_video_frames(input_video_filename, start=0, end=None, width=None, height
     return video_frames, fps, duration
 
 
-
 def save_video_frames(processed_frames, output_filename, fps, duration=0, displayVideo=True):
     """
     Save the processed frames as a new video file using OpenCV.
@@ -96,7 +95,11 @@ def save_video_frames(processed_frames, output_filename, fps, duration=0, displa
     
     # Write each frame to the video file
     for frame in processed_frames:
-        # Convert frame from RGB back to BGR for OpenCV compatibility
+        # Convert frame from floats or other formats to uint8 if necessary
+        if frame.dtype != np.uint8:
+            frame = np.clip(frame, 0, 255).astype(np.uint8)
+        
+        # Convert frame from RGB to BGR for OpenCV compatibility
         frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         
         # Ensure the frame is the correct size
