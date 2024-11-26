@@ -21,7 +21,7 @@ def get_video_frames(input_video_filename, start=0, end=None, width=None, height
         height (int, optional): The desired height for resizing the video frames. Defaults to None (no resizing).
     
     Returns:
-        list: A list of frames (each frame is a NumPy array).
+        list: A list of frames (each frame is a NumPy array in RGB format).
         tuple: A tuple containing the number of frames, frames per second (fps), and video duration.
     """
     
@@ -48,6 +48,9 @@ def get_video_frames(input_video_filename, start=0, end=None, width=None, height
         if not ret:
             break
         
+        # Convert the frame from BGR to RGB
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        
         # Resize the frame if dimensions are provided
         if width or height:
             frame = cv2.resize(frame, (width, height) if width and height else None)
@@ -66,6 +69,7 @@ def get_video_frames(input_video_filename, start=0, end=None, width=None, height
         display(Video(input_video_filename, width=width or 640, height=height or 360))
     
     return video_frames, fps, duration
+
 
 
 def save_video_frames(processed_frames, output_filename, fps, duration=0, displayVideo=True):
