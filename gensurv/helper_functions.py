@@ -387,3 +387,7 @@ def start_results_to_tracks():
         return cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
 
     return process_results_to_tacks
+
+
+def test_update():
+    print("15:29")
