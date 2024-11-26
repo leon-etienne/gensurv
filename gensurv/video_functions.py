@@ -77,14 +77,16 @@ def save_video_frames(processed_frames, output_filename, fps, duration=0, displa
     Save the processed frames as a new video file using OpenCV.
     
     Parameters:
-        processed_frames (list of ndarray): List of processed frames to save.
+        processed_frames (list of ndarray): List of processed frames in RGB format to save.
         output_filename (str): The filename for the output video.
         fps (float): The frame rate of the original video.
-        width (int): The width of the frames to save.
-        height (int): The height of the frames to save.
+        duration (float, optional): Duration of the video. Defaults to 0.
+        displayVideo (bool, optional): If True, displays the saved video. Defaults to True.
     """
-
+    
+    # Get dimensions of the frames
     height, width = processed_frames[0].shape[:2]
+    
     # Generate a timestamp for the output filename
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     full_output_filename = f"{timestamp}_{output_filename}"
@@ -94,11 +96,14 @@ def save_video_frames(processed_frames, output_filename, fps, duration=0, displa
     
     # Write each frame to the video file
     for frame in processed_frames:
-        # Ensure the frame is the correct size
-        if (frame.shape[1], frame.shape[0]) != (width, height):
-            frame = cv2.resize(frame, (width, height))
+        # Convert frame from RGB back to BGR for OpenCV compatibility
+        frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         
-        out.write(frame)
+        # Ensure the frame is the correct size
+        if (frame_bgr.shape[1], frame_bgr.shape[0]) != (width, height):
+            frame_bgr = cv2.resize(frame_bgr, (width, height))
+        
+        out.write(frame_bgr)
     
     # Release the VideoWriter object
     out.release()
