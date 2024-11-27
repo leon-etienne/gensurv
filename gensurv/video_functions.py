@@ -9,7 +9,7 @@ from tqdm import tqdm
 from ultralytics import YOLO
 import ffmpegcv
 
-def get_video_frames(input_video_filename, start=0, end=None, width=None, height=None, displayVideo=True):
+def get_video_frames(input_video_filename, start=0, end=None, width=None, height=None, display_video=True):
     """
     Loads a video, extracts frames within the specified time interval, and returns them as a list.
     
@@ -65,13 +65,13 @@ def get_video_frames(input_video_filename, start=0, end=None, width=None, height
     print(f"Frames per second (fps): {fps}")
     print(f"Duration: {duration:.2f} seconds")
     
-    if displayVideo:
+    if display_video:
         display(Video(input_video_filename, width=width or 640, height=height or 360))
     
     return video_frames, fps, duration
 
 
-def save_video_frames(processed_frames, output_filename, fps, duration=0, displayVideo=True):
+def save_video_frames(processed_frames, output_filename, fps, duration=0, display_video=True):
     """
     Save the processed frames as a new video file using OpenCV.
     
@@ -80,7 +80,7 @@ def save_video_frames(processed_frames, output_filename, fps, duration=0, displa
         output_filename (str): The filename for the output video.
         fps (float): The frame rate of the original video.
         duration (float, optional): Duration of the video. Defaults to 0.
-        displayVideo (bool, optional): If True, displays the saved video. Defaults to True.
+        display_video (bool, optional): If True, displays the saved video. Defaults to True.
     """
     
     # Get dimensions of the frames
@@ -114,6 +114,6 @@ def save_video_frames(processed_frames, output_filename, fps, duration=0, displa
     # Display video information
     print(f"Video saved to: {full_output_filename}")
     
-    if displayVideo:
+    if display_video:
         # Display the processed video with specified dimensions
         display(Video(url=full_output_filename, width=640, height=360))
