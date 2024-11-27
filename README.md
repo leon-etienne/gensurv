@@ -1,6 +1,6 @@
 # YOLO11 Tacking & Functions
 
-See `examples/yolo11_tracking.` to see how to use YOLO11-Segmentation with the code provided in the course.
+See `examples/yolo11_tracking.ipynb` to see how to use YOLO11-Segmentation with the code provided in the course.
 
 In general to track objects using YOLO we need to load model, run the tracking and plot the results.
 
@@ -11,16 +11,24 @@ video_frames, fps, duration = get_video_frames("Town.mp4", start=0, end=5)
 # Prepare Model
 model = YOLO("yolo11n-seg.pt")  # Load an official Segment model
 
+# List all classes of the model and their index
+print(model.names)
+
 # Empty list of processe frames
 processed_frames = []
 
 # Iterate frames
-for frame in video_frames:
+for current_frame in video_frames:
     # Tacking is enables through the persist flag
-    results = model.track(frame, persist=True, verbose=False)
+    # You can limit the classes tracked by adding classes=0 (or any number in model.names)
+    # Multiple classes can be tracked with classes=[0, 3, ...] 
+    # Having no classes parameter tracks all classes that are part of the model
+    results = model.track(current_frame, persist=True, verbose=False)
 
     # Results come as a list, we are only interested in the first entry thus index 0 
-    processed_frame = resutls[0].plot() # Plot with default settings
+    # Plot results with labels, boxes, masks and probabilities
+    # More information here: https://docs.ultralytics.com/modes/predict#plot-method-parameters
+    processed_frame = resutls[0].plot(labels=True, boxes=True, masks=True, probs=True)
 
     # Append frame tipynbo new video
     processed_frames.append(processed_frame)

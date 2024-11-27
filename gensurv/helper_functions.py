@@ -380,6 +380,8 @@ def start_results_to_tracks():
         Returns:
             np.array: Annotated frame with object tracks drawn.
         """
+        frame = frame.astype(np.uint8)
+        
         # Ensure `classes` and `ids` are lists
         if isinstance(classes, (int, float)):
             classes = [classes]
