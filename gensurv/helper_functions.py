@@ -109,12 +109,6 @@ def process_results_to_boxes(results, frame, classes=[], ids=[], color=(255, 255
             (class_id in classes) or
             (not classes and not ids)
         )
-        
-        print("instance_id in ids", instance_id in ids)
-        print("class_id in classes", class_id in classes)
-        print("not classes and not ids", not classes and not ids)
-        print("not classes", not classes)
-        print("not ids", not ids)
 
         if include_box:
             # Extract bounding box coordinates and draw the rectangle
@@ -370,24 +364,52 @@ def start_results_to_tracks():
     # Store the track history
     track_history = defaultdict(lambda: [])
 
-    def process_results_to_tacks(results, frame, max_tracks=30, color=(230, 230, 230), thickness=5):
+    def process_results_to_tacks(results, frame, max_tracks=30, color=(230, 230, 230), thickness=5, ids=[], classes=[]):
+        """
+        Annotates tracks of detected objects on the frame, filtered by IDs or classes.
+
+        Args:
+            results: The YOLO detection results object.
+            frame (np.array): The frame to annotate.
+            max_tracks (int, optional): Maximum number of historical points to draw. Defaults to 30.
+            color (tuple, optional): RGB color for the track lines. Defaults to (230, 230, 230).
+            thickness (int, optional): Thickness of the track lines. Defaults to 5.
+            ids (list or int/float, optional): Filter for specific track IDs. Defaults to [].
+            classes (list or int/float, optional): Filter for specific class IDs. Defaults to [].
+
+        Returns:
+            np.array: Annotated frame with object tracks drawn.
+        """
+        # Ensure `classes` and `ids` are lists
+        if isinstance(classes, (int, float)):
+            classes = [classes]
+        if isinstance(ids, (int, float)):
+            ids = [ids]
+
         annotated_frame = np.zeros_like(frame)
 
         # Get the boxes and track IDs
         boxes = results[0].boxes.xywh.cpu()
         track_ids = results[0].boxes.id.int().cpu().tolist()
+        class_ids = results[0].boxes.cls.int().cpu().tolist()
 
         # Plot the tracks
-        for box, track_id in zip(boxes, track_ids):
+        for box, track_id, class_id in zip(boxes, track_ids, class_ids):
             x, y, w, h = box
-            track = track_history[track_id]
-            track.append((float(x), float(y)))  # x, y center point
+            include_track = (
+                (track_id in ids) or
+                (class_id in classes) or
+                (not classes and not ids)
+            )
+            if include_track:
+                track = track_history[track_id]
+                track.append((float(x), float(y)))  # x, y center point
 
-            # Only draw the last `max_tracks` points
-            draw_points = track[-max_tracks:]
-            if len(draw_points) > 1:
-                points = np.hstack(draw_points).astype(np.int32).reshape((-1, 1, 2))
-                cv2.polylines(annotated_frame, [points], isClosed=False, color=color, thickness=thickness)
+                # Only draw the last `max_tracks` points
+                draw_points = track[-max_tracks:]
+                if len(draw_points) > 1:
+                    points = np.hstack(draw_points).astype(np.int32).reshape((-1, 1, 2))
+                    cv2.polylines(annotated_frame, [points], isClosed=False, color=color, thickness=thickness)
 
         return cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
 

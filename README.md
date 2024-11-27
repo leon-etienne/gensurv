@@ -304,3 +304,222 @@ processed_frame = combine_images_with_mask(processed_frame, text_frame)
 ```
 
 ![process_results_to_labels example](assets/process_results_to_labels2.jpg "process_results_to_labels example")
+
+---
+
+
+### `draw_lines_from_points`
+
+Draws lines connecting specified points on a blank frame, creating paths or shapes.
+
+#### **Parameters**:
+- `points` (np.array): Coordinates of points to connect.
+- `frame` (np.array): Original or blank frame.
+- `isClosed` (bool, optional): Whether to close the shape.
+- `color` (tuple, optional): RGB color for lines.
+- `thickness` (int, optional): Line thickness.
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for draw_lines_from_points, drawing only between id 14 and 6
+center_points = process_results_to_center_points(results, ids=[14, 6])
+lines_frame = draw_lines_from_points(center_points, processed_frame, color=(127, 0, 255), thickness=3)
+processed_frame = combine_images_with_mask(processed_frame, lines_frame)
+```
+
+![draw_lines_from_points example](assets/draw_lines_from_points.jpg "draw_lines_from_points example")
+
+---
+
+
+### `draw_circles_from_points`
+
+Draws circles at specified points on a blank frame, useful for highlighting specific locations.
+
+#### **Parameters**:
+- `points` (np.array): Coordinates of points where circles should be drawn.
+- `frame` (np.array): Original or blank frame for drawing.
+- `radius ` (int, optional): Radius of the circles. Defaults to 5.
+- `color` (tuple, optional): RGB color for the circles. Defaults to (0, 255, 0).
+- `thickness` (int, optional): Thickness of the circle outlines. Use -1 for filled circles. Defaults to -1.
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for draw_lines_from_points, drawing a blue circle for ids 11, 13, 19
+center_points = process_results_to_center_points(results, ids=[11, 13, 19])
+lines_frame = draw_circles_from_points(center_points, processed_frame, color=(127, 200, 255), radius=20)
+processed_frame = combine_images_with_mask(processed_frame, lines_frame)
+```
+
+![draw_circles_from_points example](assets/draw_circles_from_points.jpg "draw_circles_from_points example")
+
+---
+
+
+### `draw_text_from_points`
+
+Draws text labels at specified points on a blank frame.
+
+#### **Parameters**:
+ - `points` (np.array): Coordinates of points where text labels should be drawn.
+ - `frame` (np.array): Original or blank frame for drawing.
+ - `labels` (str or list): Text labels to be placed at the specified points. If a single string is provided, it is used for all points.
+ - `fontFace` (int, optional): Font type for the text. Defaults to `cv2.FONT_HERSHEY_SIMPLEX`.
+ - `fontScale` (float, optional): Scale of the text. Defaults to `2`.
+ - `color` (tuple, optional): RGB color for the text. Defaults to `(0, 255, 0)`.
+ - `thickness` (int, optional): Thickness of the text. Defaults to `4`.
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for draw_lines_from_points, drawing a blue circle for ids 11, 13, 19 with the labels a, b and c
+center_points = process_results_to_center_points(results, ids=[11, 13, 19])
+labels = ["a", "b", "c"]
+text_frame = draw_text_from_points(center_points, processed_frame, labels, fontScale=4, color=(255, 0, 0), thickness=4)
+processed_frame = combine_images_with_mask(processed_frame, text_frame)
+```
+
+![draw_text_from_points example](assets/draw_text_from_points.jpg "draw_text_from_points example")
+
+---
+
+
+## Combining Images
+
+### `combine_images_with_transparency`
+
+Combines two images with adjustable transparency, where the second image (`b`) is overlaid on the first image (`a`) with transparency controlled by `t`.
+
+
+#### **Parameters**:
+ - `a` (np.array): Base image onto which the second image will be overlaid.
+ - `b` (np.array): Image to overlay on the base image.
+ - `t` (float): Transparency level for the overlay. Must be between `0.0` (completely transparent) and `1.0` (completely opaque).
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for overlaying `b` onto `a` with 50% transparency
+boxes_frame = process_results_to_boxes(results, processed_frame, color=(255, 0, 0))
+processed_frame = combine_images_with_transparency(processed_frame, boxes_frame, 0.5)
+```
+
+![combine_images_with_transparency example](assets/combine_images_with_transparency.jpg "combine_images_with_transparency example")
+
+---
+
+
+### `combine_images_with_mask`
+
+Combines two images by overlaying the non-black pixels of the second image (`b`) onto the first image (`a`).
+
+
+#### **Parameters**:
+ - `a` (np.array): Base image onto which the non-black pixels of the second image will be applied.
+ - `b` (np.array): Overlay image whose non-black pixels will replace the corresponding pixels in the base image.
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for overlaying `b` onto `a` with 50% transparency
+boxes_frame = process_results_to_boxes(results, processed_frame, color=(255, 0, 0))
+processed_frame = combine_images_with_transparency(processed_frame, boxes_frame)
+```
+
+![combine_images_with_mask example](assets/combine_images_with_mask.jpg "combine_images_with_mask example")
+
+---
+
+
+## Miscellaneous
+
+### `process_image_to_contours`
+
+Processes an image to detect and draw contours, useful for edge detection and shape analysis.
+
+
+#### **Parameters**:
+ - `frame` (np.array): The input image (must be an RGB image).
+ - `threshold` (int, optional): Threshold value for binary thresholding. Defaults to `127`.
+ - `max_value` (int, optional): Maximum value for binary thresholding. Defaults to `255`.
+ - `color` (tuple, optional): RGB color to use for drawing contours. Defaults to white `(255, 255, 255)`.
+ - `thickness` (int, optional): Thickness of the contour lines. Defaults to `2`.
+
+#### **Code Example**:
+```python
+processed_frame = process_image_to_contours(processed_frame, threshold=150, max_value=255, color=(0, 255, 0), thickness=3)
+```
+
+![process_image_to_contours example](assets/process_image_to_contours.jpg "process_image_to_contours example")
+
+---
+
+### `start_results_to_tracks`
+
+Tracks detected objects over time and annotates their trajectories on a frame. The function allows filtering by object IDs or classes. Has to be started beforehand.
+
+#### **Parameters for the tracking or `process_results_to_tacks`**:
+ - `results` (list): The YOLO detection results object.
+ - `frame` (np.array): The frame to annotate with tracks.
+ - `max_tracks` (int, optional): Maximum number of historical points to draw for each track. Defaults to 30.
+ - `color` (tuple, optional): RGB color for the track lines. Defaults to (230, 230, 230).
+ - `thickness` (int, optional): Thickness of the track lines. Defaults to 5.
+ - `ids` (list or int/float, optional): Filter for specific track IDs. Defaults to [].
+ - `classes` (list or int/float, optional): Filter for specific object class IDs. Defaults to [].
+
+#### **Code Example**:
+```python
+video_frames, fps, duration = get_video_frames("Town.mp4", start=0, end=5)
+
+# Prepare Model
+model = YOLO("yolo11n-seg.pt")  # Load an official Segment model
+
+def process_video_frames(video_frames):
+    previous_frame = np.zeros_like(video_frames[0])
+    
+    processed_frames = []
+
+    ### Reset Ids ###
+    if model.predictor is not None:
+        model.predictor.trackers[0].reset_id()
+
+    ### Start Tracker ###
+    process_results_to_tacks = start_results_to_tracks()
+    
+    for index, current_frame in enumerate(tqdm(video_frames)):
+
+        # Track the material
+        results = model.track(current_frame, persist=True, verbose=False)
+        processed_frame = current_frame.copy()
+
+        ### Calculations including the previous frame ####
+        processed_frame = process_results_to_tacks(results, processed_frame)
+
+        ##################################################
+        
+        previous_frame = processed_frame
+
+        ### After Calculations with the previous frame ###
+
+
+        ##################################################
+        processed_frames.append(processed_frame)
+
+    return processed_frames
+
+processed_frames = process_video_frames(video_frames)
+
+save_video_frames(processed_frames, "tracking.mp4", fps, displayVideo=False)
+create_video_browser("/home/jovyan")
+```
+
+![process_results_to_tacks example](assets/process_results_to_tacks.jpg "process_results_to_tacks example")
+
+---
