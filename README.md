@@ -494,10 +494,10 @@ def process_video_frames(video_frames):
     process_results_to_tacks = start_results_to_tracks()
     
     for index, current_frame in enumerate(tqdm(video_frames)):
+        processed_frame = current_frame.copy()
 
         # Track the material
-        results = model.track(current_frame, persist=True, verbose=False)
-        processed_frame = current_frame.copy()
+        results = model.track(processed_frame, persist=True, verbose=False)
 
         ### Calculations including the previous frame ####
         processed_frame = process_results_to_tacks(results, processed_frame)
@@ -516,7 +516,7 @@ def process_video_frames(video_frames):
 
 processed_frames = process_video_frames(video_frames)
 
-save_video_frames(processed_frames, "tracking.mp4", fps, displayVideo=False)
+save_video_frames(processed_frames, "yolo_tracking.mp4", fps, displayVideo=False)
 create_video_browser("/home/jovyan")
 ```
 
