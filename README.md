@@ -296,11 +296,11 @@ processed_frame = draw_text_from_points(center_points, processed_frame, labels, 
 ```python
 results = model.track(processed_frame, persist=True, verbose=False)
 
-# Sample code for process_results_to_labels
+# Sample code for process_results_to_labels, get only id 6 and print confidence and class over the original frame
 labels = process_results_to_labels(results, model, include_classes=True, include_confidences=True, ids=[6])
-center_points = process_results_to_center_points(results)
-text_frame = draw_text_from_points(center_points, processed_frame, labels, fontScale=1, color=(255, 0, 0), thickness=1)
+center_points = process_results_to_center_points(results, ids=[6])
+text_frame = draw_text_from_points(center_points, processed_frame, labels, fontScale=1, color=(255, 0, 0), thickness=2)
 processed_frame = combine_images_with_mask(processed_frame, text_frame)
 ```
 
-![process_results_to_labels.jpg example](assets/process_results_to_labels.jpg "process_results_to_labels example")
+![process_results_to_labels example](assets/process_results_to_labels2.jpg "process_results_to_labels example")
