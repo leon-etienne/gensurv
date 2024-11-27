@@ -298,7 +298,7 @@ results = model.track(processed_frame, persist=True, verbose=False)
 
 # Sample code for process_results_to_labels
 labels = process_results_to_labels(results, model, include_classes=True, include_confidences=True, ids=[6])
-center_points = process_results_to_center_points(results, processed_frame)
+center_points = process_results_to_center_points(results)
 text_frame = draw_text_from_points(center_points, processed_frame, labels, fontScale=1, color=(255, 0, 0), thickness=1)
 processed_frame = combine_images_with_mask(processed_frame, text_frame)
 ```

@@ -158,21 +158,6 @@ def process_results_to_center_points(results, classes=[], ids=[]):
     for box in results[0].boxes:
         class_id = int(box.cls[0])
         instance_id = int(box.id[0])
-        
-        print(f"Converted class_id: {class_id}")
-        print(f"Converted instance_id: {instance_id}")
-        print(f"Converted classes: {classes}")
-        print(f"Converted ids: {ids}")
-    
-        # Debugging each part of the condition
-        print(f"instance_id in ids: {instance_id in ids}")
-        print(f"class_id in classes: {class_id in classes}")
-        print(f"not classes: {not classes}")
-        print(f"not ids: {not ids}")
-        print(f"not classes and not ids: {not classes and not ids}")
-
-        # Final result
-        print(f"include_center: {include_center}")
 
         # Check if the current detection matches the desired classes or ids
         include_center = (
