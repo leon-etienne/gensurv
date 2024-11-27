@@ -262,3 +262,45 @@ processed_frame = combine_images_with_transparency(processed_frame, lines_frame,
 ![process_results_to_boxes_points advanced example](assets/process_results_to_boxes_points2.jpg "process_results_to_boxes_points advanced example")
 
 ---
+
+
+### `process_results_to_labels`
+
+Processes bounding box results to extract optional information such as IDs, class labels, and confidences. Can filter output based on specified IDs or classes.
+
+#### **Parameters**:
+- `results` (list): The results object containing bounding boxes.
+- `model` (YOLO model): The model providing class names.
+- `include_ids` (bool, optional): Whether to include bounding box IDs in the output. Defaults to `False`.
+- `include_classes` (bool, optional): Whether to include class labels in the output. Defaults to `False`.
+- `include_confidences` (bool, optional): Whether to include confidence scores in the output. Defaults to `False`.
+- `ids` (list or int/float, optional): Filter for specific bounding box IDs. Defaults to `[]`.
+- `classes` (list or int/float, optional): Filter for specific class IDs. Defaults to `[]`.
+
+#### **Returns**:
+- `list`: A list of formatted strings with the following format: `"id: {id} | class: {class} | confidence: {confidence}"`
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for process_results_to_labels
+labels = process_results_to_labels(results, model, include_ids=True, include_classes=True, include_confidences=True)
+center_points = process_results_to_center_points(results, processed_frame)
+processed_frame = draw_text_from_points(center_points, processed_frame, labels, fontScale=1)
+```
+
+![process_results_to_labels.jpg example](assets/process_results_to_labels.jpg "process_results_to_labels example")
+
+#### **Advanced Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for process_results_to_labels
+labels = process_results_to_labels(results, model, include_classes=True, include_confidences=True, ids=[6])
+center_points = process_results_to_center_points(results, processed_frame)
+text_frame = draw_text_from_points(center_points, processed_frame, labels, fontScale=1, color=(255, 0, 0), thickness=1)
+processed_frame = combine_images_with_mask(processed_frame, text_frame)
+```
+
+![process_results_to_labels.jpg example](assets/process_results_to_labels.jpg "process_results_to_labels example")
