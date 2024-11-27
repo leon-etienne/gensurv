@@ -1,4 +1,6 @@
-## YOLO Processing Functions Documentation
+# YOLO Processing Functions Documentation
+
+## Masks and Boxes
 
 ### `process_results_to_masks`
 
@@ -35,7 +37,6 @@ processed_frame = combine_images_with_mask(processed_frame, mask)
 
 ---
 
-## YOLO Processing Functions Documentation
 
 ### `process_results_to_boxes`
 
@@ -72,3 +73,192 @@ processed_frame = combine_images_with_transparency(processed_frame, mask, 0.5)
 
 ---
 
+
+### `process_results_to_masks_normalized`
+
+Creates a normalized binary mask (0 or 1 values) from detected objects, useful for further processing.
+
+#### **Parameters**:
+- `results` (list): Detection results from the YOLO model.
+- `frame` (np.array): Original image frame.
+- `classes` (list or int, optional): Filter objects by their class IDs.
+- `ids` (list or int, optional): Filter objects by their unique IDs.
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for process_results_to_masks_normalized
+normalized_mask = process_results_to_masks_normalized(results, processed_frame, classes=[0])
+processed_frame = normalized_mask * processed_frame
+```
+
+![process_results_to_masks_normalized example](assets/process_results_to_masks_normalized.jpg "process_results_to_masks_normalized example")
+
+---
+
+
+### `process_results_to_boxes_normalized`
+
+Creates a normalized binary bounding boxes (0 or 1 values) from detected objects, useful for further processing.
+
+#### **Parameters**:
+- `results` (list): Detection results from the YOLO model.
+- `frame` (np.array): Original image frame.
+- `classes` (list or int, optional): Filter objects by their class IDs.
+- `ids` (list or int, optional): Filter objects by their unique IDs.
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for process_results_to_boxes_normalized
+normalized_boxes = process_results_to_boxes_normalized(results, processed_frame, classes=[0])
+processed_frame = normalized_boxes * processed_frame
+```
+
+![process_results_to_boxes_normalized example](assets/process_results_to_boxes_normalized.jpg "process_results_to_boxes_normalized example")
+
+---
+
+
+## Points and Lines
+
+### `process_results_to_center_points`
+
+Extracts the center points of tracked objects as an array of coordinates [x0, y0, x1, y0, ... , xn, yn].
+
+#### **Parameters**:
+- `results` (list): Detection results from the YOLO model.
+- `classes` (list or int, optional): Filter objects by their class IDs.
+- `ids` (list or int, optional): Filter objects by their unique IDs.
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for process_results_to_center_points
+center_points = process_results_to_center_points(results, classes=[0])
+processed_frame = draw_circles_from_points(center_points, processed_frame, radius=5, color=(0, 255, 0), thickness=-1)
+```
+
+![process_results_to_center_points example](assets/process_results_to_center_points.jpg "process_results_to_center_points example")
+
+#### **Advanced Code Example**:
+```python
+# Sample code for process_results_to_masks and combining it with the original frame with transparency
+results = model.track(video_frames[0], persist=True, verbose=False)
+
+center_points = process_results_to_center_points(results, classes=[0])
+lines_frame = draw_lines_from_points(center_points, processed_frame, color=(255, 127, 0), thickness=3)
+processed_frame = combine_images_with_transparency(processed_frame, lines_frame, 0.5)
+```
+
+![process_results_to_center_points advanced example](assets/process_results_to_center_points2.jpg "process_results_to_center_points advanced example")
+
+---
+
+
+### `process_results_to_center_points`
+
+Extracts the center points of tracked objects as an array of coordinates [x0, y0, x1, y0, ... , xn, yn].
+
+#### **Parameters**:
+- `results` (list): Detection results from the YOLO model.
+- `classes` (list or int, optional): Filter objects by their class IDs.
+- `ids` (list or int, optional): Filter objects by their unique IDs.
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for process_results_to_center_points
+center_points = process_results_to_center_points(results, classes=[0])
+processed_frame = draw_circles_from_points(center_points, processed_frame, radius=5, color=(0, 255, 0), thickness=-1)
+```
+
+![process_results_to_center_points example](assets/process_results_to_center_points.jpg "process_results_to_center_points example")
+
+#### **Advanced Code Example**:
+```python
+# Sample code for process_results_to_masks and combining it with the original frame with transparency
+results = model.track(video_frames[0], persist=True, verbose=False)
+
+center_points = process_results_to_center_points(results, classes=[0])
+lines_frame = draw_lines_from_points(center_points, processed_frame, color=(255, 127, 0), thickness=3)
+processed_frame = combine_images_with_transparency(processed_frame, lines_frame, 0.5)
+```
+
+![process_results_to_center_points advanced example](assets/process_results_to_center_points2.jpg "process_results_to_center_points advanced example")
+
+---
+
+
+### `process_results_to_masks_points`
+
+Extracts the center points of tracked objects as an array of coordinates [x0, y0, x1, y0, ... , xn, yn].
+
+#### **Parameters**:
+- `results` (list): Detection results from the YOLO model.
+- `classes` (list or int, optional): Filter objects by their class IDs.
+- `ids` (list or int, optional): Filter objects by their unique IDs.
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for process_results_to_masks_points
+masks_points = process_results_to_masks_points(results, classes=[0])
+processed_frame = draw_circles_from_points(masks_points, processed_frame, radius=5, color=(0, 255, 0), thickness=-1)
+```
+
+![process_results_to_masks_points example](assets/process_results_to_masks_points.jpg "process_results_to_masks_points example")
+
+#### **Advanced Code Example**:
+```python
+# Sample code for process_results_to_masks and combining it with the original frame with transparency
+results = model.track(video_frames[0], persist=True, verbose=False)
+
+masks_points = process_results_to_masks_points(results, classes=[0])
+lines_frame = draw_lines_from_points(masks_points, processed_frame, color=(255, 127, 0), thickness=3)
+processed_frame = combine_images_with_transparency(processed_frame, lines_frame, 0.5)
+```
+
+![process_results_to_masks_points advanced example](assets/process_results_to_masks_points2.jpg "process_results_to_masks_points advanced example")
+
+---
+
+
+### `process_results_to_boxes_points`
+
+Extracts the center points of tracked objects as an array of coordinates [x0, y0, x1, y0, ... , xn, yn].
+
+#### **Parameters**:
+- `results` (list): Detection results from the YOLO model.
+- `classes` (list or int, optional): Filter objects by their class IDs.
+- `ids` (list or int, optional): Filter objects by their unique IDs.
+
+#### **Code Example**:
+```python
+results = model.track(processed_frame, persist=True, verbose=False)
+
+# Sample code for process_results_to_boxes_points
+boxes_points = process_results_to_boxes_points(results, classes=[0])
+processed_frame = draw_circles_from_points(boxes_points, processed_frame, radius=5, color=(0, 255, 0), thickness=-1)
+```
+
+![process_results_to_boxes_points example](assets/process_results_to_boxes_points.jpg "process_results_to_boxes_points example")
+
+#### **Advanced Code Example**:
+```python
+# Sample code for process_results_to_masks and combining it with the original frame with transparency
+results = model.track(video_frames[0], persist=True, verbose=False)
+
+boxes_points = process_results_to_boxes_points(results, classes=[0])
+lines_frame = draw_lines_from_points(boxes_points, processed_frame, color=(255, 127, 0), thickness=3)
+processed_frame = combine_images_with_transparency(processed_frame, lines_frame, 0.5)
+```
+
+![process_results_to_boxes_points advanced example](assets/process_results_to_boxes_points2.jpg "process_results_to_boxes_points advanced example")
+
+---

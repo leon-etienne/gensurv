@@ -237,47 +237,52 @@ def process_results_to_masks_points(results, classes=[], ids=[]):
     return points
 
 
-def process_results_to_labels(results, model):
+def process_results_to_labels(results, model, include_ids=False, include_classes=False, include_confidences=False, ids=[], classes=[]):
     """
-    Extracts class labels for bounding boxes based on the model's class names.
+    Processes bounding box results to extract optional information:
+    IDs, class labels, and confidences, filtered by specified IDs and classes.
+    
+    Args:
+        results: The results object containing bounding boxes.
+        model: The model providing class names.
+        include_ids (bool): Whether to include bounding box IDs in the output.
+        include_classes (bool): Whether to include class labels in the output.
+        include_confidences (bool): Whether to include confidences in the output.
+        ids (list or single int/float): Filter for specific bounding box IDs. Defaults to None.
+        classes (list or single int/float): Filter for specific class IDs. Defaults to None.
+    
+    Returns:
+        List of formatted strings in the form:
+        "id: {id} | class: {class} | confidence: {confidence}".
     """
-    labels = []
+    # Ensure `classes` and `ids` are lists
+    if isinstance(classes, (int, float)):
+        classes = [classes]
+    if isinstance(ids, (int, float)):
+        ids = [ids]
+
+    output = []
     for box in results[0].boxes:
+        instance_id = int(box.id[0])
         class_id = int(box.cls[0])
-        labels.append(model.names[class_id])
-    return labels
-
-
-def process_results_to_classes_labels(results, model):
-    """
-    Extracts class labels for bounding boxes based on the model's class names.
-    """
-    labels = []
-    for box in results[0].boxes:
-        class_id = int(box.cls[0])
-        labels.append(model.names[class_id])
-    return labels
-
-
-def process_results_to_ids_labels(results, model):
-    """
-    Extracts class labels for bounding boxes based on the model's class names.
-    """
-    labels = []
-    for box in results[0].boxes:
-        id = int(box.id[0])
-        labels.append(str(id))
-    return labels
-
-
-def process_results_to_confidences_labels(results, model):
-    """
-    Extracts class labels for bounding boxes based on the model's class names.
-    """
-    labels = []
-    for box in results[0].boxes:
-        labels.append(float(box.conf[0]))
-    return labels
+        
+        # Determine if the box matches the filters
+        include_mask = (
+            (instance_id in ids) or
+            (class_id in classes) or
+            (not classes and not ids)
+        )
+        
+        if include_mask:
+            id_str = f"id: {instance_id}" if include_ids else ""
+            class_str = f"class: {model.names[class_id]}" if include_classes else ""
+            conf_str = f"confidence: {float(box.conf[0]):.2f}" if include_confidences else ""
+            
+            # Build the formatted string with separators
+            formatted = " | ".join(filter(None, [id_str, class_str, conf_str]))
+            output.append(formatted.strip())
+    
+    return output
 
 
 def draw_lines_from_points(points, frame, isClosed=False, color=(0, 255, 0), thickness=2):
@@ -387,7 +392,3 @@ def start_results_to_tracks():
         return cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
 
     return process_results_to_tacks
-
-
-def test_update():
-    print("15:29")
