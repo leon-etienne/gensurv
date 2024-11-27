@@ -161,6 +161,8 @@ def process_results_to_center_points(results, classes=[], ids=[]):
         
         print(f"Converted class_id: {class_id}")
         print(f"Converted instance_id: {instance_id}")
+        print(f"Converted classes: {classes}")
+        print(f"Converted ids: {ids}")
     
         # Debugging each part of the condition
         print(f"instance_id in ids: {instance_id in ids}")
