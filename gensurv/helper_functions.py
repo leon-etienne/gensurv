@@ -158,7 +158,10 @@ def process_results_to_center_points(results, classes=[], ids=[]):
     for box in results[0].boxes:
         class_id = int(box.cls[0])
         instance_id = int(box.id[0])
-
+        
+        print(f"Converted class_id: {class_id}")
+        print(f"Converted instance_id: {instance_id}")
+    
         # Debugging each part of the condition
         print(f"instance_id in ids: {instance_id in ids}")
         print(f"class_id in classes: {class_id in classes}")
