@@ -1,4 +1,34 @@
-# YOLO Processing Functions Documentation
+# YOLO11 Tacking & Functions
+
+See `examples/yolo11_tracking.` to see how to use YOLO11-Segmentation with the code provided in the course.
+
+In general to track objects using YOLO we need to load model, run the tracking and plot the results.
+
+```python
+# Load the video
+video_frames, fps, duration = get_video_frames("Town.mp4", start=0, end=5)
+
+# Prepare Model
+model = YOLO("yolo11n-seg.pt")  # Load an official Segment model
+
+# Empty list of processe frames
+processed_frames = []
+
+# Iterate frames
+for frame in video_frames:
+    # Tacking is enables through the persist flag
+    results = model.track(frame, persist=True, verbose=False)
+
+    # Results come as a list, we are only interested in the first entry thus index 0 
+    processed_frame = resutls[0].plot() # Plot with default settings
+
+    # Append frame tipynbo new video
+    processed_frames.append(processed_frame)
+
+# Save the video back
+save_video_frames(processed_frames, "yolo11_tracking.mp4", fps, displayVideo=False)
+```
+
 
 ## Masks and Boxes
 
