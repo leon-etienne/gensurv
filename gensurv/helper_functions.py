@@ -55,12 +55,11 @@ def process_results_to_masks(results, frame, classes=[], ids=[], color=(255, 255
     masks = np.zeros_like(frame)
 
     # Iterate through detected masks and bounding boxes
-    print(results[0].masks)
     if results[0].masks == None:
         return masks
 
     for mask, box in zip(results[0].masks.xy, results[0].boxes):
-        if box.id[0] == None:
+        if box.id == None:
             continue
         class_id = int(box.cls[0])
         instance_id = int(box.id[0])
@@ -224,7 +223,7 @@ def process_results_to_masks_points(results, classes=[], ids=[]):
         return points
 
     for mask, box in zip(results[0].masks.xy, results[0].boxes):
-        if box.id[0] == None:
+        if box.id == None:
             continue
         class_id = int(box.cls[0])
         instance_id = int(box.id[0])
