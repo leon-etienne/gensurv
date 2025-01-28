@@ -60,6 +60,8 @@ def process_results_to_masks(results, frame, classes=[], ids=[], color=(255, 255
         return masks
 
     for mask, box in zip(results[0].masks.xy, results[0].boxes):
+        if box.id[0] == None:
+            continue
         class_id = int(box.cls[0])
         instance_id = int(box.id[0])
 
@@ -222,6 +224,8 @@ def process_results_to_masks_points(results, classes=[], ids=[]):
         return points
 
     for mask, box in zip(results[0].masks.xy, results[0].boxes):
+        if box.id[0] == None:
+            continue
         class_id = int(box.cls[0])
         instance_id = int(box.id[0])
 
