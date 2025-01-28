@@ -55,6 +55,7 @@ def process_results_to_masks(results, frame, classes=[], ids=[], color=(255, 255
     masks = np.zeros_like(frame)
 
     # Iterate through detected masks and bounding boxes
+    print(results[0].masks)
     if results[0].masks == None:
         return masks
 
