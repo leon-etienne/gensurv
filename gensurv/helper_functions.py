@@ -30,7 +30,7 @@ import torch
 # Inpainting
 # Marigold Depth and normals
 
-def process_results_to_masks(results, frame, classes=None, ids=None, color=(255, 255, 255), thickness=-1):
+def process_results_to_masks(results, frame, classes=[], ids=[], color=(255, 255, 255), thickness=-1):
     """
     Generates a binary mask with specified objects as white (255) and the background as black (0).
     
@@ -66,9 +66,9 @@ def process_results_to_masks(results, frame, classes=None, ids=None, color=(255,
 
         # Check if the current detection matches the desired classes or ids
         include_mask = (
-            (classes == None and ids == None) or
             (instance_id in ids) or
-            (class_id in classes)
+            (class_id in classes) or
+            (not classes and not ids)
         )
 
         if include_mask:
@@ -79,7 +79,7 @@ def process_results_to_masks(results, frame, classes=None, ids=None, color=(255,
     return masks
 
 
-def process_results_to_boxes(results, frame, classes=None, ids=None, color=(255, 255, 255), thickness=-1):
+def process_results_to_boxes(results, frame, classes=[], ids=[], color=(255, 255, 255), thickness=-1):
     """
     Generates a mask with bounding boxes drawn in white (255) on a black (0) background.
     
@@ -110,9 +110,9 @@ def process_results_to_boxes(results, frame, classes=None, ids=None, color=(255,
 
         # Check if the current detection matches the desired classes or ids
         include_box = (
-            (classes == None and ids == None) or
             (instance_id in ids) or
-            (class_id in classes)
+            (class_id in classes) or
+            (not classes and not ids)
         )
 
         if include_box:
@@ -124,7 +124,7 @@ def process_results_to_boxes(results, frame, classes=None, ids=None, color=(255,
 
 
 
-def process_results_to_masks_normalized(results, frame, classes=None, ids=None, color=(255, 255, 255), thickness=-1):
+def process_results_to_masks_normalized(results, frame, classes=[], ids=[], color=(255, 255, 255), thickness=-1):
     """
     Generates a normalized mask with objects as 1 and the background as 0.
     """
@@ -133,7 +133,7 @@ def process_results_to_masks_normalized(results, frame, classes=None, ids=None, 
     return masks
 
 
-def process_results_to_boxes_normalized(results, frame, classes=None, ids=None, color=(255, 255, 255), thickness=-1):
+def process_results_to_boxes_normalized(results, frame, classes=[], ids=[], color=(255, 255, 255), thickness=-1):
     """
     Generates a normalized mask with objects as 1 and the background as 0.
     """
@@ -142,7 +142,7 @@ def process_results_to_boxes_normalized(results, frame, classes=None, ids=None, 
     return masks
 
 
-def process_results_to_center_points(results, classes=None, ids=None):
+def process_results_to_center_points(results, classes=[], ids=[]):
     """
     Extracts the center points of bounding boxes as an array of coordinates.
     """
@@ -160,9 +160,9 @@ def process_results_to_center_points(results, classes=None, ids=None):
 
         # Check if the current detection matches the desired classes or ids
         include_center = (
-            (classes == None and ids == None) or
             (instance_id in ids) or
-            (class_id in classes)
+            (class_id in classes) or
+            (not classes and not ids)
         )
         
         if include_center:
@@ -174,7 +174,7 @@ def process_results_to_center_points(results, classes=None, ids=None):
     return points
 
 
-def process_results_to_boxes_points(results, classes=None, ids=None):
+def process_results_to_boxes_points(results, classes=[], ids=[]):
     """
     Extracts the corner points of bounding boxes as an array of coordinates.
     """
@@ -192,9 +192,9 @@ def process_results_to_boxes_points(results, classes=None, ids=None):
 
         # Check if the current detection matches the desired classes or ids
         include_boxes = (
-            (classes == None and ids == None) or
             (instance_id in ids) or
-            (class_id in classes)
+            (class_id in classes) or
+            (not classes and not ids)
         )
         
         if include_boxes:
@@ -207,7 +207,7 @@ def process_results_to_boxes_points(results, classes=None, ids=None):
     return points
 
 
-def process_results_to_masks_points(results, classes=None, ids=None):
+def process_results_to_masks_points(results, classes=[], ids=[]):
     """
     Extracts points from masks as an array of coordinates.
     """
@@ -230,9 +230,9 @@ def process_results_to_masks_points(results, classes=None, ids=None):
 
         # Check if the current detection matches the desired classes or ids
         include_mask = (
-            (classes == None and ids == None) or
             (instance_id in ids) or
-            (class_id in classes)
+            (class_id in classes) or
+            (not classes and not ids)
         )
         
         if include_mask:
@@ -241,7 +241,7 @@ def process_results_to_masks_points(results, classes=None, ids=None):
     return points
 
 
-def process_results_to_labels(results, model, include_ids=False, include_classes=False, include_confidences=False, ids=None, classes=None):
+def process_results_to_labels(results, model, include_ids=False, include_classes=False, include_confidences=False, ids=[], classes=[]):
     """
     Processes bounding box results to extract optional information:
     IDs, class labels, and confidences, filtered by specified IDs and classes.
@@ -272,9 +272,9 @@ def process_results_to_labels(results, model, include_ids=False, include_classes
         
         # Determine if the box matches the filters
         include_mask = (
-            (classes == None and ids == None) or
             (instance_id in ids) or
-            (class_id in classes)
+            (class_id in classes) or
+            (not classes and not ids)
         )
         
         if include_mask:
@@ -374,7 +374,7 @@ def start_results_to_tracks():
     # Store the track history
     track_history = defaultdict(lambda: [])
 
-    def process_results_to_tacks(results, frame, max_tracks=30, color=(230, 230, 230), thickness=5, ids=None, classes=None):
+    def process_results_to_tacks(results, frame, max_tracks=30, color=(230, 230, 230), thickness=5, ids=[], classes=[]):
         """
         Annotates tracks of detected objects on the frame, filtered by IDs or classes.
 
@@ -409,9 +409,9 @@ def start_results_to_tracks():
         for box, track_id, class_id in zip(boxes, track_ids, class_ids):
             x, y, w, h = box
             include_track = (
-                (classes == None and ids == None) or
                 (track_id in ids) or
-                (class_id in classes)
+                (class_id in classes) or
+                (not classes and not ids)
             )
             if include_track:
                 track = track_history[track_id]
