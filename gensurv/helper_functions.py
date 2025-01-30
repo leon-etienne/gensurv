@@ -405,7 +405,10 @@ def start_results_to_tracks():
 
         # Get the boxes and track IDs
         boxes = results[0].boxes.xywh.cpu()
-        track_ids = results[0].boxes.id.int().cpu().tolist()
+        if results[0].boxes.id is None:
+            track_ids = []
+        else:
+            track_ids = results[0].boxes.id.int().cpu().tolist()
         class_ids = results[0].boxes.cls.int().cpu().tolist()
 
         # Plot the tracks
