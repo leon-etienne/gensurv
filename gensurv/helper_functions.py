@@ -159,7 +159,10 @@ def process_results_to_center_points(results, classes=[], ids=[]):
     
     for box in results[0].boxes:
         class_id = int(box.cls[0])
-        instance_id = int(box.id[0])
+        if box.id is None:
+            instance_id = int(box.id[0])
+        else:
+            instance_id = -1
 
         # Check if the current detection matches the desired classes or ids
         include_center = (
