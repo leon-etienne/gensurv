@@ -427,7 +427,7 @@ def start_results_to_tracks():
                 draw_points = track[-max_tracks:]
                 if len(draw_points) > 1:
                     points = np.hstack(draw_points).astype(np.int32).reshape((-1, 1, 2))
-                    cv2.polylines(annotated_frame, [points], isClosed=False, color=color, thickness=thickness)
+                    cv2.polylines(annotated_frame, [points], isClosed=False, color=color[::-1], thickness=thickness)
 
         return cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
 
